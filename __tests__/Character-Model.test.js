@@ -5,53 +5,53 @@ const app = require('../lib/app');
 const Character = require('../lib/models/Character-Model');
 
 describe('Character routes', () => {
-   beforeEach(() => {
-       return pool.query(fs.readFileSync('./sql/setup.sql', 'utf-8'));
-   });
-   
-   it('Creates a new Character via POST', () => {
-       return request(app)
-         .post('/api/v1/characters')
-         .send({
-           name: 'Dwight',
-           position: 'Assistant to the Regional Manager',
-           quote: 'Identity Theft is not a joke Jim!',
-           imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
-           favoriteDessert: 'Can of Pickled Beets from his survival shelter'
-         })
-         .then(res => {
-             expect(res.body).toEqual({
-                id: expect.any(String),
-                name: 'Dwight',
-                position: 'Assistant to the Regional Manager',
-                quote: 'Identity Theft is not a joke Jim!',
-                imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
-                favoriteDessert: 'Can of Pickled Beets from his survival shelter'
-             });
-         });
-   });
+  beforeEach(() => {
+    return pool.query(fs.readFileSync('./sql/setup.sql', 'utf-8'));
+  });
 
-   it('Gets all Characters via GET', async() => {
-     const characters = await Promise.all([
-       {
+  it('Creates a new Character via POST', () => {
+    return request(app)
+      .post('/api/v1/characters')
+      .send({
         name: 'Dwight',
         position: 'Assistant to the Regional Manager',
         quote: 'Identity Theft is not a joke Jim!',
         imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
         favoriteDessert: 'Can of Pickled Beets from his survival shelter'
-       }
-     ].map(character => Character.insert(character)));
+      })
+      .then(res => {
+        expect(res.body).toEqual({
+          id: expect.any(String),
+          name: 'Dwight',
+          position: 'Assistant to the Regional Manager',
+          quote: 'Identity Theft is not a joke Jim!',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
+          favoriteDessert: 'Can of Pickled Beets from his survival shelter'
+        });
+      });
+  });
 
-     return request(app)
-       .get('/api/v1/characters')
-       .then(res => {
-         characters.forEach(character => {
-           expect(res.body).toContainEqual(character);
-         });
-       });
-   });
+  it('Gets all Characters via GET', async () => {
+    const characters = await Promise.all([
+      {
+        name: 'Dwight',
+        position: 'Assistant to the Regional Manager',
+        quote: 'Identity Theft is not a joke Jim!',
+        imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
+        favoriteDessert: 'Can of Pickled Beets from his survival shelter'
+      }
+    ].map(character => Character.insert(character)));
 
-   it('gets one character by id via GET', async() => {
+    return request(app)
+      .get('/api/v1/characters')
+      .then(res => {
+        characters.forEach(character => {
+          expect(res.body).toContainEqual(character);
+        });
+      });
+  });
+
+  it('gets one character by id via GET', async () => {
     await Promise.all([
       {
         name: 'Dwight',
@@ -76,7 +76,7 @@ describe('Character routes', () => {
       });
   });
 
-  it('updates a character by id via PUT', async() => {
+  it('updates a character by id via PUT', async () => {
     const character = await Character.insert({
       name: 'Dwight',
       position: 'Assistant to the Regional Manager',
@@ -105,4 +105,26 @@ describe('Character routes', () => {
         });
       });
   });
-})
+
+  it('deletes a character by id using DELETE', async () => {
+    const character = await Character.insert({
+      name: 'Dwight',
+      position: 'Assistant to the Regional Manager',
+      quote: 'Identity Theft is not a joke Jim!',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
+      favoriteDessert: 'Can of Pickled Beets from his survival shelter'
+    });
+
+    const response = await request(app)
+      .delete(`/api/v1/characters/${character.id}`);
+
+    expect(response.body).toEqual({
+      id: expect.any(String),
+      name: 'Dwight',
+      position: 'Assistant to the Regional Manager',
+      quote: 'Identity Theft is not a joke Jim!',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
+      favoriteDessert: 'Can of Pickled Beets from his survival shelter'
+    });
+  });
+});
