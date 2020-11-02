@@ -50,4 +50,29 @@ describe('Character routes', () => {
          });
        });
    });
+
+   it('gets one character by id via GET', async() => {
+    await Promise.all([
+      {
+        name: 'Dwight',
+        position: 'Assistant to the Regional Manager',
+        quote: 'Identity Theft is not a joke Jim!',
+        imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
+        favoriteDessert: 'Can of Pickled Beets from his survival shelter'
+      }
+    ].map(character => Character.insert(character)));
+
+    return request(app)
+      .get('/api/v1/characters/1')
+      .then(res => {
+        expect(res.body).toEqual({
+          id: expect.any(String),
+          name: 'Dwight',
+          position: 'Assistant to the Regional Manager',
+          quote: 'Identity Theft is not a joke Jim!',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
+          favoriteDessert: 'Can of Pickled Beets from his survival shelter'
+        });
+      });
+  });
 })
