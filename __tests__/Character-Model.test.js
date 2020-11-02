@@ -75,4 +75,34 @@ describe('Character routes', () => {
         });
       });
   });
+
+  it('updates a character by id via PUT', async() => {
+    const character = await Character.insert({
+      name: 'Dwight',
+      position: 'Assistant to the Regional Manager',
+      quote: 'Identity Theft is not a joke Jim!',
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
+      favoriteDessert: 'Can of Pickled Beets from his survival shelter'
+    });
+
+    return request(app)
+      .put(`/api/v1/characters/${character.id}`)
+      .send({
+        name: 'Dwight',
+        position: 'Assistant to the Regional Manager',
+        quote: 'Identity Theft is not a joke Jim!',
+        imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
+        favoriteDessert: 'Can of Pickled Beets from his survival shelter'
+      })
+      .then(res => {
+        expect(res.body).toEqual({
+          id: expect.any(String),
+          name: 'Dwight',
+          position: 'Assistant to the Regional Manager',
+          quote: 'Identity Theft is not a joke Jim!',
+          imageUrl: 'https://upload.wikimedia.org/wikipedia/en/c/cd/Dwight_Schrute.jpg',
+          favoriteDessert: 'Can of Pickled Beets from his survival shelter'
+        });
+      });
+  });
 })
